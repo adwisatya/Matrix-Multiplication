@@ -36,18 +36,18 @@ void PrintMatrix(int **matrix){
 }
 
 int main(){
-	int **matrix;
-	scanf("%d",&M_SIZE);
-	matrix = CreateMatrix();
-	MatrixInput(matrix);
-	PrintMatrix(matrix);
-	/* 
-	printf("%d",M_SIZE);
-	int temp = 0;
-	int i;
-	for(i=0;i<M_SIZE;i++){
-		scanf("%d",&temp);
-		printf("%d",temp);
-	}
-	*/
+	FILE *fp;
+
+	int **matrixA;
+	int **matrixB;
+	
+	/* membuat dummy matrix */
+	M_SIZE = 3;
+	matrixA = CreateMatrix();
+	matrixB = CreateMatrix();
+	
+	
+	MatrixInput(matrixA);
+	PrintMatrix(matrixA);
+	
 }
