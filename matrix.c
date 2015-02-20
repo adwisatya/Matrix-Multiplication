@@ -7,6 +7,7 @@ Reference: http://stackoverflow.com/questions/7906825/dynamically-allocating-a-m
 #include <stdio.h>
 #include <stdlib.h>
 int M_SIZE;
+
 int **CreateMatrix(){
 	int **matrix = malloc(sizeof(int*)* M_SIZE);
 	int row;
@@ -36,11 +37,10 @@ void PrintMatrix(int **matrix){
 }
 
 int main(){
-	FILE *fp;
 
 	int **matrixA;
 	int **matrixB;
-	
+
 	/* membuat dummy matrix */
 	scanf("%d",&M_SIZE);
 	printf("Matrix size %d ",M_SIZE);
