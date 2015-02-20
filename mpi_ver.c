@@ -39,19 +39,9 @@ int main(int argc, char *argv[]){
 
 	int **matrixA;
 	int **matrixB;
-	int myrank, P, from, to;
+	int myrank, P, from, to,y;
 	int tag = 666;
-	/* membuat dummy matrix */
-	scanf("%d",&M_SIZE);
-	printf("Matrix size %d ",M_SIZE);
-	printf("\n");
-	
-	matrixA = CreateMatrix();
-	matrixB = CreateMatrix();
-	
-	MatrixInput(matrixA);
-	PrintMatrix(matrixA);
-	printf("\n");
+
 	
 	MPI_Status status;
   
@@ -69,16 +59,27 @@ int main(int argc, char *argv[]){
 	to = (myrank+1) * M_SIZE/P;
 	
 	if (myrank==0) {
+	/* membuat dummy matrix */
+	scanf("%d",&M_SIZE);
+	printf("Matrix size %d ",M_SIZE);
+	printf("\n");
+	
+	matrixA = CreateMatrix();
+	matrixB = CreateMatrix();
+	
+	MatrixInput(matrixA);
+	PrintMatrix(matrixA);
+	printf("\n");
 		matrixA = CreateMatrix();
 		matrixB = CreateMatrix();
 	}
 	
-	MPI_Bcast (A, M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-	MPI_Scatter (A, M_SIZE*M_SIZE/P, MPI_INT, A[from], M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast (matrixA, M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Scatter (matrixA, M_SIZE*M_SIZE/P, MPI_INT, matrixA[from], M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
 
 	printf("computing slice %d (from row %d to %d)\n", myrank, from, to-1);
 	/* perkalian dengan matrix kembar */
-	for (i=from; i<to; i++){
+	for (y=from; y<to; y++){
 		for(int j=0;j<M_SIZE;j++){
 			for(int i=0;i<M_SIZE;i++){
 				matrixB[i][j] =  0;
@@ -90,10 +91,10 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
-	MPI_Gather (C[from], SIZE*SIZE/P, MPI_INT, C, SIZE*SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Gather (matrixB[from], M_SIZE*M_SIZE/P, MPI_INT, matrixB, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
 	if (myrank==0) {
 		printf("\n\n");
-		PrintMatrix(B);
+		PrintMatrix(matrixB);
 		printf("\n\n\t       * \n");
 	}
 
