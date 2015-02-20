@@ -42,13 +42,27 @@ int main(){
 	int **matrixB;
 	
 	/* membuat dummy matrix */
-	M_SIZE = 3;
+	scanf("%d",&M_SIZE);
+	printf("Matrix size %d ",M_SIZE);
+	printf("\n");
+	
 	matrixA = CreateMatrix();
 	matrixB = CreateMatrix();
 	
 	MatrixInput(matrixA);
 	PrintMatrix(matrixA);
-	MatrixInput(matrixB);
+	printf("\n");
+
+	/* perkalian dengan matrix kembar */
+	for(int j=0;j<M_SIZE;j++){
+		for(int i=0;i<M_SIZE;i++){
+			matrixB[i][j] =  0;
+		}
+		for(int k=0;k<M_SIZE;k++){
+			for(int i=0;i<M_SIZE;i++){
+				matrixB[i][j] = matrixB[i][j] + matrixA[i][k] * matrixA[k][j];
+			}
+		}
+	}
 	PrintMatrix(matrixB);
-	
 }
