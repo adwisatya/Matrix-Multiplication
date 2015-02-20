@@ -46,8 +46,9 @@ int main(){
 	matrixA = CreateMatrix();
 	matrixB = CreateMatrix();
 	
-	
 	MatrixInput(matrixA);
 	PrintMatrix(matrixA);
+	MatrixInput(matrixB);
+	PrintMatrix(matrixB);
 	
 }
