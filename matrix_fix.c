@@ -5,7 +5,7 @@ Reference:
 http://stackoverflow.com/questions/7906825/dynamically-allocating-a-matrix-from-input-c
 http://www.eecg.toronto.edu/~amza/ece1747h/homeworks/examples/MPI/other-examples/mmult.c
 */
-//#include <mpi.h>
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -59,24 +59,44 @@ int main(int argc, char *argv[]){
             - baca M_SIZE
             - broadcast M_SIZE
             - isi matrix
-            - kirim matrix */
+            - kirim matrix
+        */
         scanf("%d",&M_SIZE);
+
         matrixA = CreateMatrix(M_SIZE);
         MatrixInput(matrixA,M_SIZE);
         matrixB = CreateMatrix(M_SIZE);
         MatrixInput(matrixB,M_SIZE);
         matrixC = CreateMatrix(M_SIZE);
-    }
-    MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Scatter(matrixA,M_SIZE*M_SIZE/P,MPI_INT, matrixA[from],M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
 
+        //printf("Master %s %d", processor_name, M_SIZE);
+    }
+    from = myrank * M_SIZE/P;
+    to = (myrank+1) *M_SIZE/P;
+
+    MPI_Bcast(&M_SIZE,1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&matrixB,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(&matrixA,M_SIZE*M_SIZE/P,MPI_INT, &matrixA[from],M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
+
+    /* Perhitungan Matrix */
+    printf("%s: computing slice %d (from row %d to %d)\n", processor_name, myrank, from, to-1);
+    for (i=from; i<to; i++){
+        for (j=0; j<M_SIZE; j++) {
+            matrixC[i][j]=0;
+            for (k=0; k<M_SIZE; k++){
+                    matrixC[i][j] += matrixA[i][k]*matrixA[k][j];
+            }
+        }
+    }
+
+    MPI_Gather (&matrixC[from], M_SIZE*M_SIZE/P, MPI_INT, &matrixC, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
     if(myrank == 0){
         PrintMatrix(matrixA,M_SIZE);
         printf("*\n");
-        //PrintMatrix(matrixB);
+        PrintMatrix(matrixB,M_SIZE);
         printf("=\n");
-        PrintMatrix(matrixC,M_SIZE);
+        printf("selesai");
+        //PrintMatrix(matrixC,M_SIZE);
     }
     MPI_Finalize();
     return 0;
