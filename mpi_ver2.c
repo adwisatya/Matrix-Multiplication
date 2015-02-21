@@ -9,7 +9,7 @@ http://www.eecg.toronto.edu/~amza/ece1747h/homeworks/examples/MPI/other-examples
 #include <stdio.h>
 #include <stdlib.h>
 //#define M_SIZE 10
-int M_SIZE=10;
+int M_SIZE=64;
 void MatrixInput(int matrix[M_SIZE][M_SIZE]){
         int row, col;
         for(row=0;row<M_SIZE;row++){
@@ -30,8 +30,8 @@ void PrintMatrix(int matrix[M_SIZE][M_SIZE]){
 }
 
 int main(int argc, char *argv[]){
-        //scanf("%d",&M_SIZE);
-        //printf("%d\n",M_SIZE);
+        scanf("%d",&M_SIZE);
+        printf("%d\n",M_SIZE);
         int matrixA[M_SIZE][M_SIZE], matrixB[M_SIZE][M_SIZE],matrixC[M_SIZE][M_SIZE];
 
         int myrank, P, from, to, i, j, k;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
         if(myrank == 0){
                 /* Maka Master Thread */
                 MatrixInput(matrixA);
-                MatrixInput(matrixB);
+                //MatrixInput(matrixB);
         }
 
         MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]){
         if(myrank==0){
                 PrintMatrix(matrixA);
                 printf("*\n");
-                PrintMatrix(matrixB);
+                //PrintMatrix(matrixB);
                 printf("=\n");
                 PrintMatrix(matrixC);
         }
