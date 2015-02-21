@@ -9,7 +9,7 @@ http://www.eecg.toronto.edu/~amza/ece1747h/homeworks/examples/MPI/other-examples
 #include <stdio.h>
 #include <stdlib.h>
 //#define M_SIZE 10
-int M_SIZE=10;
+int M_SIZE=64;
 void MatrixInput(int matrix[M_SIZE][M_SIZE]){
         int row, col;
         for(row=0;row<M_SIZE;row++){
@@ -30,83 +30,8 @@ void PrintMatrix(int matrix[M_SIZE][M_SIZE]){
 }
 
 int main(int argc, char *argv[]){
-<<<<<<< HEAD
-	int size;
-	scanf("%d",&size);
-	printf("%d\n",size);
-	M_SIZE = size;
-	int matrixA[M_SIZE][M_SIZE], matrixB[M_SIZE][M_SIZE],matrixC[M_SIZE][M_SIZE];
-
-	int myrank, P, from, to, i, j, k;
-	int tag = 3;
-	char processor_name[MPI_MAX_PROCESSOR_NAME];
-	int name_len;
-	
-	MPI_Status status;
-	MPI_Init (&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);	
-	MPI_Comm_size(MPI_COMM_WORLD, &P); 
-	MPI_Get_processor_name(processor_name,&name_len);
-
-	if(myrank==0)
-	{
-		int size;
-		scanf("%d",&size);
-		printf("%d\n",size);
-		//MPI_BCAST(size,)
-		MatrixInput(matrixA);
-		MatrixInput(matrixB);
-	}
-	M_SIZE = size;
-	//if(P>M_SIZE) 
-	//{
-//		P = M_SIZE;
-		//printf("Jumlah proses melebihi ukuran matriks\nJumlah proses menjadi %d",&P);
-	//}
-	//else
-	//{
-		if (M_SIZE%P!=0) {
-			if (myrank==0) printf("Matrix size not divisible by number of processors\n");
-			MPI_Finalize();
-			exit(-1);
-		}
-	//}
-	from = myrank * M_SIZE/P;
-	to = (myrank+1) * M_SIZE/P;
-	if(myrank == 0){
-		// Maka Master Thread 
-		MatrixInput(matrixA);
-		//MatrixInput(matrixB);
-	}
-	
-	//MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-	MPI_Scatter(matrixA,M_SIZE*M_SIZE/P,MPI_INT, matrixA[from],M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
-	
-	printf("%s: computing slice %d (from row %d to %d)\n", processor_name, myrank, from, to-1);
-	for (i=from; i<to; i++){
-		for (j=0; j<M_SIZE; j++) {
-			matrixC[i][j]=0;
-			for (k=0; k<M_SIZE; k++){
-				matrixC[i][j] += matrixA[i][k]*matrixA[k][j];
-			}
-		}
-	}
-	
-	MPI_Gather (matrixC[from], M_SIZE*M_SIZE/P, MPI_INT, matrixC, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
-
-	//MPI_Barrier(MPI_COMM_WORLD);
-	if(myrank==0){
-		PrintMatrix(matrixA);
-		printf("*\n");
-		PrintMatrix(matrixB);
-		printf("=\n");
-		PrintMatrix(matrixC);
-	}
-	MPI_Finalize();*/
-	return 0;
-=======
-        //scanf("%d",&M_SIZE);
-        //printf("%d\n",M_SIZE);
+        scanf("%d",&M_SIZE);
+        printf("%d\n",M_SIZE);
         int matrixA[M_SIZE][M_SIZE], matrixB[M_SIZE][M_SIZE],matrixC[M_SIZE][M_SIZE];
 
         int myrank, P, from, to, i, j, k;
@@ -130,7 +55,7 @@ int main(int argc, char *argv[]){
         if(myrank == 0){
                 /* Maka Master Thread */
                 MatrixInput(matrixA);
-                MatrixInput(matrixB);
+                //MatrixInput(matrixB);
         }
 
         MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
@@ -152,11 +77,10 @@ int main(int argc, char *argv[]){
         if(myrank==0){
                 PrintMatrix(matrixA);
                 printf("*\n");
-                PrintMatrix(matrixB);
+                //PrintMatrix(matrixB);
                 printf("=\n");
                 PrintMatrix(matrixC);
         }
         MPI_Finalize();
         return 0;
->>>>>>> f6c4935514273b61f7fe6f43092f51ae6eaccb0a
 }
