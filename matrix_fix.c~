@@ -177,6 +177,7 @@ int main(int argc, char *argv[]){
         printf("*\n");
         PrintMatrix(matrixB,M_SIZE);
         printf("=\n");
+>>>>>>> 3947fc308efdcc324b987d0380155046aaa1ed3e
         PrintMatrix(matrixC,M_SIZE);
     }
     MPI_Finalize();
