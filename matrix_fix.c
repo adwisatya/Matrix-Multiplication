@@ -20,9 +20,9 @@ int **CreateMatrix(int M_SIZE){
 void MatrixInput(int ** matrix,int M_SIZE){
     int row, col;
     for(row=0;row<M_SIZE;row++){
-            for (col=0; col<M_SIZE; col++){
-                    scanf("%d",&matrix[row][col]);
-            }
+        for (col=0; col<M_SIZE; col++){
+            scanf("%d",&matrix[row][col]);
+        }
     }
 }
 
@@ -44,7 +44,6 @@ int main(int argc, char *argv[]){
 
     /* variabel untuk MPI */
     int myrank,P,from,to,i,j,k;
-    int tag = 666;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     int name_len;
 
@@ -62,41 +61,42 @@ int main(int argc, char *argv[]){
             - kirim matrix
         */
         scanf("%d",&M_SIZE);
+        printf("M_SIZE: %d\n",M_SIZE);
+    }
+    MPI_Bcast(&M_SIZE,1, MPI_INT, 0, MPI_COMM_WORLD);
+    matrixC = CreateMatrix(M_SIZE);
 
-        matrixA = CreateMatrix(M_SIZE);
+    matrixA = CreateMatrix(M_SIZE);
+    matrixB = CreateMatrix(M_SIZE);
+
+    if(myrank==0){
         MatrixInput(matrixA,M_SIZE);
-        matrixB = CreateMatrix(M_SIZE);
         MatrixInput(matrixB,M_SIZE);
-        matrixC = CreateMatrix(M_SIZE);
-
-        //printf("Master %s %d", processor_name, M_SIZE);
     }
     from = myrank * M_SIZE/P;
-    to = (myrank+1) *M_SIZE/P;
+    to = (myrank+1) * M_SIZE/P;
 
-    MPI_Bcast(&M_SIZE,1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&matrixB,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Scatter(&matrixA,M_SIZE*M_SIZE/P,MPI_INT, &matrixA[from],M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
+    MPI_Scatter(matrixA,M_SIZE*M_SIZE/P,MPI_INT, matrixA,M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
+    MPI_Bcast(matrixB,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
 
-    /* Perhitungan Matrix */
-    printf("%s: computing slice %d (from row %d to %d)\n", processor_name, myrank, from, to-1);
+    printf("%s: computing slice %d (from row %d to %d)\n", processor_name, myrank, from, to-1,M_SIZE);
     for (i=from; i<to; i++){
         for (j=0; j<M_SIZE; j++) {
             matrixC[i][j]=0;
             for (k=0; k<M_SIZE; k++){
-                    matrixC[i][j] += matrixA[i][k]*matrixA[k][j];
+                matrixC[i][j] += matrixA[i][k]*matrixB[k][j];
             }
         }
     }
 
-    MPI_Gather (&matrixC[from], M_SIZE*M_SIZE/P, MPI_INT, &matrixC, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
-    if(myrank == 0){
+    MPI_Gather (matrixC, M_SIZE*M_SIZE/P, MPI_INT, matrixC, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if(myrank==0){
         PrintMatrix(matrixA,M_SIZE);
         printf("*\n");
         PrintMatrix(matrixB,M_SIZE);
         printf("=\n");
-        printf("selesai");
-        //PrintMatrix(matrixC,M_SIZE);
+        PrintMatrix(matrixC,M_SIZE);
     }
     MPI_Finalize();
     return 0;
