@@ -61,16 +61,23 @@ int main(int argc, char *argv[]){
             - isi matrix
             - kirim matrix */
         scanf("%d",&M_SIZE);
-        MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
-    }else{
-
+        matrixA = CreateMatrix(M_SIZE);
+        MatrixInput(matrixA,M_SIZE);
+        matrixB = CreateMatrix(M_SIZE);
+        MatrixInput(matrixB,M_SIZE);
+        matrixC = CreateMatrix(M_SIZE);
     }
-    scanf("%d",&M_SIZE);
-    printf("%d", M_SIZE);
-    matrixA = CreateMatrix(M_SIZE);
-    matrixB = CreateMatrix(M_SIZE);
-    MatrixInput(matrixA,M_SIZE);
-    MatrixInput(matrixB,M_SIZE);
-    PrintMatrix(matrixA,M_SIZE);
-    PrintMatrix(matrixB,M_SIZE);
+    MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(matrixA,M_SIZE*M_SIZE/P,MPI_INT, matrixA[from],M_SIZE*M_SIZE/P,MPI_INT, 0,MPI_COMM_WORLD);
+
+    if(myrank == 0){
+        PrintMatrix(matrixA,M_SIZE);
+        printf("*\n");
+        //PrintMatrix(matrixB);
+        printf("=\n");
+        PrintMatrix(matrixC,M_SIZE);
+    }
+    MPI_Finalize();
+    return 0;
 }
