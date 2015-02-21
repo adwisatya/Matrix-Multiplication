@@ -8,9 +8,7 @@ http://www.eecg.toronto.edu/~amza/ece1747h/homeworks/examples/MPI/other-examples
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define M_SIZE 20
-int matrixA[M_SIZE][M_SIZE], matrixB[M_SIZE][M_SIZE];
-
+int M_SIZE;
 void MatrixInput(int matrix[M_SIZE][M_SIZE]){
 	int row, col;
 	for(row=0;row<M_SIZE;row++){
@@ -31,6 +29,9 @@ void PrintMatrix(int matrix[M_SIZE][M_SIZE]){
 }
 
 int main(int argc, char *argv[]){
+	scanf("%d",&M_SIZE);
+	printf("%d\n",M_SIZE);
+	int matrixA[M_SIZE][M_SIZE], matrixB[M_SIZE][M_SIZE],matrixC[M_SIZE][M_SIZE];
 
 	int myrank, P, from, to, i, j, k;
 	int tag = 666;		/* any value will do */
@@ -53,6 +54,7 @@ int main(int argc, char *argv[]){
 	if(myrank == 0){
 		/* Maka Master Thread */
 		MatrixInput(matrixA);
+		//MatrixInput(matrixB);
 	}
 	
 	MPI_Bcast(matrixA,M_SIZE*M_SIZE, MPI_INT, 0, MPI_COMM_WORLD);
@@ -61,19 +63,22 @@ int main(int argc, char *argv[]){
 	printf("%s: computing slice %d (from row %d to %d)\n", processor_name, myrank, from, to-1);
 	for (i=from; i<to; i++){
 		for (j=0; j<M_SIZE; j++) {
-			matrixB[i][j]=0;
+			matrixC[i][j]=0;
 			for (k=0; k<M_SIZE; k++){
-				matrixB[i][j] += matrixA[i][k]*matrixA[k][j];
+				matrixC[i][j] += matrixA[i][k]*matrixA[k][j];
 			}
 		}
 	}
 	
-	MPI_Gather (matrixB[from], M_SIZE*M_SIZE/P, MPI_INT, matrixB, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Gather (matrixC[from], M_SIZE*M_SIZE/P, MPI_INT, matrixC, M_SIZE*M_SIZE/P, MPI_INT, 0, MPI_COMM_WORLD);
 
-	MPI_Barrier(MPI_COMM_WORLD);
+	//MPI_Barrier(MPI_COMM_WORLD);
 	if(myrank==0){
 		PrintMatrix(matrixA);
+		printf("*\n");
 		PrintMatrix(matrixB);
+		printf("=\n");
+		PrintMatrix(matrixC);
 	}
 	MPI_Finalize();
 	return 0;
