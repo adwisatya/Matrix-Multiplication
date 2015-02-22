@@ -146,29 +146,24 @@ int main(int argc, char *argv[]){
 	}
 	else
 	{
-		/*for(i=from; i<to; i++)
-		{
-			for(j=0; j<M_SIZE; j++)
-			{
-				int sum = 0;
-				for(k=fromB; k<toB; k++)
-				{
-					//sum += matrixA[i][k] * matrixB[k][j];
-					sum += matrixA[i][j] * matB_arr[k];
-					//sum += matrixA[i][k%M_SIZE] * matB_arr[k];
-					if(from==0 && i==from && j==0) printf("sum += %d * %d = %d\n",matrixA[i][j],matB_arr[k],sum);
-				}
-				matrixC[i][j] += sum;
-			}
-		}*/
 		k = fromB;
+		int colC = 0;
 		//for(k=from; k<toB; k++)
 		while(k<toB)
 		{
-			int sum = 0;
-			for(i=0; i<M_SIZE; i++)
+			for(i=from; i<to; i++)
 			{
-				
+				if(colC==M_SIZE) colC = 0;
+				int sum = 0;
+				for(j=0; j<M_SIZE; j++)
+				{
+					sum += matrixA[i][j] * matB_arr[k];
+					k++;
+					//printf("[%d][%d] += %d = %d",i,colC,matrixA[i][j] * matB_arr[k],sum);
+				}
+				matrixC[i][colC] += sum;
+				colC++;
+				//printf("\n");
 			}
 		}
 	}
